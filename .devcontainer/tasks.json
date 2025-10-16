@@ -10,6 +10,6 @@
     }
   ],
   "runOptions": {
-    "runOn": "folderOpen"  // ✅ auto-starts when the workspace opens
+    "runOn": "folderOpen"
   }
 }
