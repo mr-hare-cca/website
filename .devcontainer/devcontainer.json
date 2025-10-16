@@ -1,13 +1,12 @@
 {
-  "name": "HTML-CSS-JS (Auto Live Preview, Integrated)",
+  "name": "HTML-CSS-JS (Integrated Live Preview)",
   "build": { "dockerfile": "Dockerfile" },
-
   "forwardPorts": [3000],
 
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.live-server",
+        "ms-vscode.livepreview",          // ✅ In-editor Live Preview (not external)
         "esbenp.prettier-vscode",
         "formulahendry.auto-close-tag",
         "formulahendry.auto-rename-tag"
@@ -15,14 +14,11 @@
       "settings": {
         "livePreview.defaultPreviewPath": "index.html",
         "livePreview.serverPortNumber": 3000,
-        "livePreview.openPreviewTarget": "Integrated"   // keep preview in-editor
+        "livePreview.openPreviewTarget": "Integrated"  // ✅ keep it inside VS Code
       }
     }
   },
 
-  // Ensure the script is executable on first build
   "postCreateCommand": "chmod +x .devcontainer/start-live-preview.sh",
-
-  // 🔑 Run UI commands only after VS Code attaches to the container
   "postAttachCommand": "bash .devcontainer/start-live-preview.sh"
 }
