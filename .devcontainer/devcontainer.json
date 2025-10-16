@@ -13,8 +13,7 @@
       "settings": {
         "livePreview.defaultPreviewPath": "index.html",
         "livePreview.serverPortNumber": 3000,
-        "livePreview.openPreviewTarget": "default"
-      }
+        "livePreview.defaultPreviewPath": "index.html"      
     }
   },
   "postAttachCommand": "code --install-extension ms-vscode.live-server --force && code --reuse-window index.html"
