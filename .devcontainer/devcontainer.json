@@ -1,20 +1,20 @@
 {
-  "name": "HTML-CSS-JS (with Microsoft Live Preview)",
+  "name": "HTML-CSS-JS (with Live Preview)",
   "build": { "dockerfile": "Dockerfile" },
   "forwardPorts": [3000],
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.live-server",        
+        "ms-vscode.live-server",
         "esbenp.prettier-vscode",
         "formulahendry.auto-close-tag",
         "formulahendry.auto-rename-tag"
       ],
       "settings": {
         "livePreview.defaultPreviewPath": "index.html",
-        "livePreview.serverPortNumber": 3000,
-        "livePreview.defaultPreviewPath": "index.html"      
+        "livePreview.serverPortNumber": 3000
+      }
     }
   },
-  "postAttachCommand": "code --install-extension ms-vscode.live-server --force && code --reuse-window index.html"
+  "postAttachCommand": "code --reuse-window index.html"
 }
