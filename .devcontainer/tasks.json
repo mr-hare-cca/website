@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start dev server (browser-sync)",
+      "type": "shell",
+      "command": "browser-sync start --server . --files '**/*.html' '**/*.css' '**/*.js' --port 3000 --no-open --no-ui",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ],
+  "runOptions": {
+    "runOn": "folderOpen"  // ✅ auto-starts when the workspace opens
+  }
+}
