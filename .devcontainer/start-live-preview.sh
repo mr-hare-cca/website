@@ -1,22 +1,20 @@
 #!/usr/bin/env bash
 set -e
 
-# Wait for VS Code server and extensions to finish loading
-sleep 5
+# Give the VS Code client & extensions a moment to be fully ready
+sleep 3
 
-# 1️⃣ Open index.html
-code --force --reuse-window index.html || true
+# 1) Open index.html in the current VS Code window
+code --reuse-window index.html || true
 
-# 2️⃣ Split editor right (side-by-side)
+# 2) Split editor to the right and focus it
 code --command workbench.action.splitEditorRight || true
-
-# 3️⃣ Focus the right editor group
 code --command workbench.action.focusSecondEditorGroup || true
 
-# 4️⃣ Launch integrated Live Preview
+# 3) Launch Live Preview (Integrated target is enforced by settings.json)
 code --command 'livePreview.showPreview' || true
 
-# 5️⃣ Return focus to the left (code) side
+# 4) (Optional) return focus to the code on the left
 code --command workbench.action.focusFirstEditorGroup || true
 
-echo "✅ Live Preview opened side-by-side with index.html"
+echo "✅ index.html opened and Live Preview shown side-by-side (integrated)."
