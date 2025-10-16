@@ -1,11 +1,11 @@
 {
-  "name": "HTML-CSS-JS (with Live Preview)",
+  "name": "HTML-CSS-JS (with Microsoft Live Preview)",
   "build": { "dockerfile": "Dockerfile" },
   "forwardPorts": [3000],
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.livepreview",         
+        "ms-vscode.live-server",        
         "esbenp.prettier-vscode",
         "formulahendry.auto-close-tag",
         "formulahendry.auto-rename-tag"
@@ -17,5 +17,5 @@
       }
     }
   },
-  "postAttachCommand": "code --reuse-window index.html"
+  "postAttachCommand": "code --install-extension ms-vscode.live-server --force && code --reuse-window index.html"
 }
