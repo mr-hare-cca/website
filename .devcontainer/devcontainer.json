@@ -1,24 +1,32 @@
 {
-  "name": "HTML-CSS-JS (Integrated Live Preview)",
+  "name": "HTML-CSS-JS (Integrated Preview, Auto)",
   "build": { "dockerfile": "Dockerfile" },
+
   "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Web Preview",
+      "onAutoForward": "openPreview"  // ✅ opens in-editor, not a new browser tab
+    }
+  },
 
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.livepreview",          // ✅ In-editor Live Preview (not external)
         "esbenp.prettier-vscode",
         "formulahendry.auto-close-tag",
         "formulahendry.auto-rename-tag"
       ],
       "settings": {
-        "livePreview.defaultPreviewPath": "index.html",
-        "livePreview.serverPortNumber": 3000,
-        "livePreview.openPreviewTarget": "Integrated"  // ✅ keep it inside VS Code
+        // Keep preview inside VS Code when a port is opened
+        "remote.autoForwardPortsSource": "hybrid"
       }
     }
   },
 
-  "postCreateCommand": "chmod +x .devcontainer/start-live-preview.sh",
-  "postAttachCommand": "bash .devcontainer/start-live-preview.sh"
+  // Make sure the task can run (install dev server once)
+  "postCreateCommand": "npm i -g browser-sync",
+
+  // Open the entry file once VS Code is attached (safe; no --command)
+  "postAttachCommand": "code --reuse-window index.html"
 }
