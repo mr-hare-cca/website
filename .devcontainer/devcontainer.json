@@ -1,9 +1,14 @@
 {
-  "name": "HTML-CSS-JS (Auto Live Preview)",
-  "build": { "dockerfile": "Dockerfile" },
+  "name": "HTML-CSS-JS (Auto Live Preview, Integrated)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "forwardPorts": [3000],
   "portsAttributes": {
-    "3000": { "label": "Live Preview", "onAutoForward": "openBrowser" }
+    "3000": {
+      "label": "Live Preview",
+      "onAutoForward": "openBrowser"
+    }
   },
   "customizations": {
     "vscode": {
@@ -20,5 +25,6 @@
       }
     }
   },
+  "postCreateCommand": "chmod +x .devcontainer/start-live-preview.sh",
   "postStartCommand": "bash .devcontainer/start-live-preview.sh"
 }
