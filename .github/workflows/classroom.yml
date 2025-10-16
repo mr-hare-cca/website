@@ -1,0 +1,220 @@
+name: Autograding Tests
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Resolve CSS path
+      id: resolve-css
+      run: |
+        set -euo pipefail
+        CSS=""
+        if [[ -f styles.css ]]; then CSS="styles.css"; fi
+        if [[ -z "$CSS" && -f css/styles.css ]]; then CSS="css/styles.css"; fi
+        echo "css_path=$CSS" >> "$GITHUB_OUTPUT"
+
+    # three-paragraphs (3 </p>)
+    - name: Three paragraphs
+      id: three-paragraphs
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: three-paragraphs
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          c=$(grep -o "</p>" index.html | wc -l || true)
+          [[ $c -ge 3 ]] && echo PASS || echo "FAIL ($c)"
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 10
+
+    # linking-stylesheet (rel="stylesheet")
+    - name: Linking Styles Sheet
+      id: linking-stylesheet
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: linking-stylesheet
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          grep -q "rel=\"stylesheet\"" index.html && echo PASS || echo FAIL
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 5
+
+    # correct-heading-tags (3 </h3>, 1 </h2>, 1 </h1>)
+    - name: Correct Heading Tags
+      id: correct-heading-tags
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: correct-heading-tags
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          h3=$(grep -o "</h3>" index.html | wc -l || true)
+          h2=$(grep -o "</h2>" index.html | wc -l || true)
+          h1=$(grep -o "</h1>" index.html | wc -l || true)
+          [[ $h3 -ge 3 && $h2 -ge 1 && $h1 -ge 1 ]] && echo PASS || echo "FAIL ($h3,$h2,$h1)"
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 5
+
+    # three-images-with-wrapped-text (3 "<img " + float: in CSS)
+    - name: Three Images with Wrapped Text
+      id: three-images-with-wrapped-text
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: three-images-with-wrapped-text
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          CSS="${{ steps.resolve-css.outputs.css_path }}"
+          [[ -n "$CSS" ]] || { echo "FAIL (styles.css not found)"; exit 0; }
+          ic=$(grep -o "<img " index.html | wc -l || true)
+          if grep -qi "float:" "$CSS" && [[ $ic -ge 3 ]]; then echo PASS; else echo "FAIL"; fi
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 5
+
+    # three-links (3 </a>)
+    - name: Three Links
+      id: three-links
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: three-links
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          c=$(grep -o "</a>" index.html | wc -l || true)
+          [[ $c -ge 3 ]] && echo PASS || echo FAIL
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 5
+
+    # container-plus-extra-div (at least 2 </div>)
+    - name: Container Plus 2nd Div
+      id: container-plus-extra-div
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: container-plus-extra-div
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          c=$(grep -o "</div>" index.html | wc -l || true)
+          [[ $c -ge 2 ]] && echo PASS || echo FAIL
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 10
+
+    # use-of-classes (3 class= in HTML + at least one .class selector in CSS)
+    - name: Class Attributes and Selector
+      id: use-of-classes
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: use-of-classes
+        command: |
+          bash -lc '
+          [[ -f index.html ]] || { echo "FAIL (missing index.html)"; exit 0; }
+          CSS="${{ steps.resolve-css.outputs.css_path }}"
+          [[ -n "$CSS" ]] || { echo "FAIL (styles.css not found)"; exit 0; }
+          cls=$(grep -oE "class\s*=" index.html | wc -l || true)
+          if [[ $cls -ge 3 ]] && grep -qE '\.[A-Za-z0-9_-]+' "$CSS"; then echo PASS; else echo FAIL; fi
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 10
+
+    # misc-css-properties (padding, margin, border, line-height, font)
+    - name: Misc CSS properties
+      id: misc-css-properties
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: misc-css-properties
+        command: |
+          bash -lc '
+          CSS="${{ steps.resolve-css.outputs.css_path }}"
+          [[ -n "$CSS" ]] || { echo "FAIL (styles.css not found)"; exit 0; }
+          for k in padding margin border line-height font; do
+            grep -qi "$k" "$CSS" || { echo FAIL; exit 0; }
+          done
+          echo PASS
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 10
+
+    # pseudo-selectors (:hover / :visited / :active)
+    - name: CSS Pseudo-classes
+      id: pseudo-selectors
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: pseudo-selectors
+        command: |
+          bash -lc '
+          CSS="${{ steps.resolve-css.outputs.css_path }}"
+          [[ -n "$CSS" ]] || { echo "FAIL (styles.css not found)"; exit 0; }
+          grep -qiE ":(hover|visited|active)" "$CSS" && echo PASS || echo FAIL
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 5
+
+    # three-breakpoints (3 occurrences of @media ... max-width)
+    - name: Three Breakpoints (@media)
+      id: three-breakpoints
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: three-breakpoints
+        command: |
+          bash -lc '
+          CSS="${{ steps.resolve-css.outputs.css_path }}"
+          [[ -n "$CSS" ]] || { echo "FAIL (styles.css not found)"; exit 0; }
+          c=$(grep -i "@media" "$CSS" | grep -i "max-width" | wc -l || true)
+          [[ $c -ge 3 ]] && echo PASS || echo "FAIL ($c)"
+          '
+        expected-output: PASS
+        comparison-method: exact
+        timeout: 5
+        max-score: 10
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        THREE-PARAGRAPHS_RESULTS:           "${{ steps.three-paragraphs.outputs.result }}"
+        LINKING-STYLESHEET_RESULTS:         "${{ steps.linking-stylesheet.outputs.result }}"
+        CORRECT-HEADING-TAGS_RESULTS:       "${{ steps.correct-heading-tags.outputs.result }}"
+        THREE-IMAGES-WITH-WRAPPED-TEXT_RESULTS: "${{ steps.three-images-with-wrapped-text.outputs.result }}"
+        THREE-LINKS_RESULTS:                "${{ steps.three-links.outputs.result }}"
+        CONTAINER-PLUS-EXTRA-DIV_RESULTS:   "${{ steps.container-plus-extra-div.outputs.result }}"
+        USE-OF-CLASSES_RESULTS:             "${{ steps.use-of-classes.outputs.result }}"
+        MISC-CSS-PROPERTIES_RESULTS:        "${{ steps.misc-css-properties.outputs.result }}"
+        PSEUDO-SELECTORS_RESULTS:           "${{ steps.pseudo-selectors.outputs.result }}"
+        THREE-BREAKPOINTS_RESULTS:          "${{ steps.three-breakpoints.outputs.result }}"
+      with:
+        runners: "three-paragraphs,linking-stylesheet,correct-heading-tags,three-images-with-wrapped-text,three-links,container-plus-extra-div,use-of-classes,misc-css-properties,pseudo-selectors,three-breakpoints"

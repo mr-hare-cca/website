@@ -1,0 +1,30 @@
+{
+  "name": "HTML-CSS-JS (Auto Live Preview)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Live Preview",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.live-server",
+        "esbenp.prettier-vscode",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag"
+      ],
+      "settings": {
+        "livePreview.defaultPreviewPath": "index.html",
+        "livePreview.serverPortNumber": 3000,
+        "livePreview.openPreviewTarget": "Integrated"
+      }
+    }
+  },
+  "postStartCommand": "bash .devcontainer/start-live-preview.sh",
+  "remoteUser": "vscode"
+}
