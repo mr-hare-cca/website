@@ -13,7 +13,7 @@
       "settings": {
         "livePreview.defaultPreviewPath": "index.html",
         "livePreview.serverPortNumber": 3000,
-        "livePreview.openPreviewTarget": "Integrated"
+        "livePreview.openPreviewTarget": "default"
       }
     }
   },
